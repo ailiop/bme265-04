@@ -1,0 +1,228 @@
+\documentclass[12pt,x11names]{beamer}
+\usetheme{Copenhagen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% PREAMBLE
+
+
+% -------------------- packages -------------------- %
+
+% page formatting
+% \usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+
+% math
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{array}
+\usepackage{cancel}
+% \usepackage{breqn}
+
+% floats
+\usepackage[section]{placeins}
+% \usepackage{float}
+% \usepackage{listings}
+% \usepackage[section]{algorithm}
+% \usepackage{algpseudocode}
+\usepackage[font={small,color=darkgray},labelfont=bf,hypcap=true]{caption}
+\usepackage[font={footnotesize,color=darkgray},labelfont=bf,hypcap=true]{subcaption}
+% \usepackage{sidecap}
+
+% graphics
+\usepackage{graphicx}
+% \usepackage[pdftex,hyperref,x11names]{xcolor}
+% \usepackage{tikz}
+% \usepackage{pgfplots}
+
+% tables
+\usepackage{multirow}
+\usepackage{booktabs}
+
+% lists
+\usepackage{enumerate}
+\usepackage{paralist}
+
+% header and footer
+\usepackage{fancyhdr}
+
+% footnotes
+\usepackage[bottom]{footmisc}
+
+% ordinal numbers
+\usepackage[super]{nth}
+
+% fonts
+\usepackage[resetfonts]{cmap}
+
+% references
+\usepackage[numbers,square]{natbib}
+% \usepackage[pdftex]{hyperref}
+% \usepackage{cleveref}
+
+% -------------------------------------------------- %
+
+
+% -------------------- customizations -------------------- %
+
+% define coloured clickable links
+\hypersetup{%
+pdffitwindow=false,%
+colorlinks,%
+pdfauthor={Alexandros-Stavros Iliopoulos},%
+pdftitle={Image registration in the Radon domain},%
+pagebackref=false,%
+citecolor=PaleGreen4,%
+filecolor=DarkOrchid4,%
+linkcolor=OrangeRed4,%
+urlcolor=RoyalBlue4%
+}
+
+% define the includegraphics search path
+\graphicspath{{figs/}{figs/pdf/}{../code/}}
+
+% easy command for boldface math symbols
+\newcommand{\mbs}[1]{\boldsymbol{#1}}
+
+% define a dark gray color to be used in captions
+\definecolor{darkgray}{rgb}{0.25,0.25,0.25}
+
+% define bibliography style
+\bibliographystyle{plain}
+
+% -------------------------------------------------------- %
+
+
+% -------------------- title -------------------- %
+
+\title{\textbf{Image registration in the Radon domain}}
+\author[A. S. Iliopoulos]{Alexandros-Stavros Iliopoulos\\
+  \href{mailto:ailiop@cs.duke.edu}{\texttt{ailiop@cs.duke.edu}}}
+\institute[Duke University]{Duke University}
+\date{\today}
+
+% ----------------------------------------------- %
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% DOCUMENT
+
+
+\begin{document}
+
+\def\newblock{\hskip .11em plus .33em minus .07em}
+
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Foreword}
+  
+  The project is a new-born.
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{What flavor of registration?}
+
+  \begin{itemize}
+
+  \item The proposed methodology aims to register frames whose relative
+    alignment can be described through \emph{affine} geometric
+    transformations:
+    \begin{itemize}
+    \item Reflection
+    \item Scaling
+    \item Translation
+    \item Rotation
+    \end{itemize}
+
+  \item Motion is not required to be of sub-pixel magnitude.
+
+  \item Computations occur in the discrete Radon domain.
+    \begin{itemize}
+    \item The model is based on~\cite{hjouj_identification_2008}.
+    \end{itemize}
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Advantages}
+  
+  \begin{itemize}
+
+  \item Can be robust to noise.
+
+  \item E.g.\ let $g = f + \eta$, where $\eta$ is zero-mean, white Gaussian
+    noise:
+    \begin{align*}
+      E\{ \mathfrak{R}g(p,\phi) \}
+      &= E\left\{ \int_L{g(x,y) dl} \right\} \\
+      &= E\left\{ \int_L{[f(x,y) + \eta(x,y)] dl} \right\} \\
+      &= E\left\{ \int_L{f(x,y) dl} \right\}
+      + \cancelto{0}{E\left\{ \int_L{\eta(x,y) dl} \right\}} \\
+      &= E\{ \mathfrak{R}f(p,\phi) \}
+    \end{align*}
+    \begin{itemize}
+    \item Also true for the discrete case.
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Advantages (Cont'd)}
+  
+  \begin{itemize}
+
+  \item Not all information in the Radon domain are ``required.'' (E.g.\
+    without rotation, 1 column of the Radon transforms of the frames
+    suffices.)
+    \begin{itemize}
+    \item Further opportunities for noise tolerance.
+    \item Compression.
+    \end{itemize}
+
+  \item Computations are done via (relatively) simple vector operations.
+    \begin{itemize}
+    \item Efficiency?
+    \end{itemize}
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Goals}
+  
+  \begin{itemize}
+  \item Measure and compare registration in the Radon domain with other
+    registration approaches (e.g.\ Fourier-based methods).
+    \begin{itemize}
+    \item Performance.
+    \item Robustness to noise.
+    \item Efficiency/complexity.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\nocite{*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% REFERENCES
+
+\bibliography{refs-presentation.bib}
+
+
+\end{document}

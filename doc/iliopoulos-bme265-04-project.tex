@@ -1,0 +1,179 @@
+\documentclass[twoside]{IEEEtran}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% PREAMBLE
+
+
+% -------------------- packages -------------------- %
+
+% page formatting
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+
+% math
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{array}
+\usepackage{cancel}
+% \usepackage{breqn}
+
+% floats
+\usepackage[section]{placeins}
+\usepackage{float}
+\usepackage{listings}
+\usepackage[section]{algorithm}
+\usepackage{algpseudocode}
+\usepackage[font={small,color=darkgray},labelfont=bf,hypcap=true]{caption}
+\usepackage[font={footnotesize,color=darkgray},labelfont=bf,hypcap=true]{subcaption}
+% \usepackage{sidecap}
+
+% graphics
+\usepackage{graphicx}
+\usepackage[pdftex,hyperref,x11names]{xcolor}
+% \usepackage{tikz}
+% \usepackage{pgfplots}
+
+% tables
+\usepackage{multirow}
+\usepackage{booktabs}
+
+% lists
+\usepackage{enumerate}
+\usepackage{paralist}
+
+% header and footer
+\usepackage{fancyhdr}
+
+% footnotes
+\usepackage[bottom]{footmisc}
+
+% ordinal numbers
+\usepackage[super]{nth}
+
+% fonts
+\usepackage[resetfonts]{cmap}
+
+% references
+\usepackage[numbers,square]{natbib}
+\usepackage[pdftex]{hyperref}
+\usepackage{cleveref}
+
+
+% -------------------- customizations -------------------- %
+
+% define coloured clickable links
+\hypersetup{%
+pdffitwindow=false,%
+colorlinks,%
+pdfauthor={Alexandros-Stavros Iliopoulos},%
+pdftitle={BME 265-04 Project},%
+pagebackref=false,%
+citecolor=PaleGreen4,%
+filecolor=DarkOrchid4,%
+linkcolor=OrangeRed4,%
+urlcolor=RoyalBlue4%
+}
+
+% define the includegraphics search path
+\graphicspath{{figs/}{figs/pdf/}{../code/}}
+
+% specify font formatting for listings
+\lstset{basicstyle=\footnotesize\ttfamily}
+
+% force newly defined floats to be ruled
+\floatstyle{ruled}
+
+% create a 'code' float
+\newfloat{prog}{tbp}{loc}[section]
+\floatname{prog}{Program}
+\captionsetup[prog]{font={small,color=darkgray},labelfont=bf,hypcap=true}
+
+% prefix equations, figures and tables with the section number
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\numberwithin{prog}{section}
+
+% define theorems, lemmas and corollaries and make them have contiguous
+% numbers
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+% easy command for resetting counters when using section*
+\newcommand{\resetcounters}{
+\setcounter{subsection}{0}
+\setcounter{subsubsection}{0}
+\setcounter{equation}{0}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\setcounter{prog}{0}
+}
+
+% easy command for boldface math symbols
+\newcommand{\mbs}[1]{\boldsymbol{#1}}
+
+% define a dark gray color to be used in captions
+\definecolor{darkgray}{rgb}{0.25,0.25,0.25}
+
+% define non-abbreviated figure and equation references
+\crefname{figure}{figure}{figures}
+\crefname{equation}{equation}{equations}
+\crefname{prog}{program}{programs}
+
+% define bibliography style
+\bibliographystyle{plain}
+
+% set headings
+\markboth{Journal of Duke University BME 265-04 Class Projects, Vol.~1,
+  No.~1, May~2012}{Iliopoulos: Image Registration in the Radon Domain}
+
+
+% -------------------- title -------------------- %
+
+\title{{\Large BME 265-04 Project:}\\
+  Image Registration in the Radon domain}
+\author{Alexandros-Stavros Iliopoulos%
+  \thanks{This work was supported by coffee.}%
+  \thanks{The author is with Duke University, Durham, NC 27701.}}
+\date{\today}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% DOCUMENT
+
+
+\begin{document}
+
+\maketitle
+
+
+\begin{abstract}
+  If only I had an intriguing idea...
+\end{abstract}
+
+
+The dead---do they sleep? Why should they, when we cannot?
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% REFERENCES
+
+
+% \bibliography{ @@Bib-file@@ }
+
+
+\end{document}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

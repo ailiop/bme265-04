@@ -1,0 +1,85 @@
+ESTIMATED AFFINE TRANSFORMATION PARAMETERS
+------------------------------------------
+
+RRSCALE has been dealt with, but it is very likely that the parameters that
+are estimated by the RR____ functions are actually the *reciprocals* of the
+applied transformations' parameters.
+
+The appropriate way to address this disparity might be to invert the
+estimates returned by RR____, and invert them again when applying
+transformations to the DRT in RADONREG (since there we want the
+transformation to have the opposite effect). This is mostly for the
+functions' purpose to be clearer.
+
+
+@ RRSCALE
+---------
+
+A scaling affine transformation changes the size of the image, and
+therefore also the size of its Radon transform. If the scaling parameter is
+not estimated exactly (which is always the case), this can become
+problematic because of the computational model that is employed for
+estimation of the rotation angle between two frames, as it requires
+calculating the difference of corresponding Radon-transform pixels.
+
+One way to ensure that the Radon transform of the anchor frame and the
+Radon transform of the to-be-registered frame have the same size is to
+invoke the 'imtransform' function with the options {'XData', [1
+size(anchor,2)]} and {'YData', [1 size(anchor,1)]}. However, some
+experimentation with the functions 'immse' and 'immae' revealed that this
+approach does not seem to work particularly well.
+
+Another option is to pad the DRT whose size is smaller with rows of
+zeroes. The 'immse' and 'immae' experimentation leads me to believe that if
+the difference in number of rows is odd, then the "lesser half" should go
+to the top (lower index) rows.
+
+There is still non-negligible error, but since the purpose of the
+computations that require element-wise subtraction of the DRTs is to find
+the "angle shift" (in the DRT, "column shift", or "shift along rows") that
+minimises the registration error, this might not be a problem.
+
+(Perhaps all this means that a single-step optical flow registration would 
+help?)
+
+
+ABOUT ROTATING
+--------------
+
+A rotating affine transformation will change the size of the transformed 
+image, in order for its content to be of the same scale, while the bounding
+box covers the area through each the image was "rotated."
+
+Assuming that we have pre-processed the image with zero-padding, so that we
+can have images of the same pixel size and scale that are rotated versions
+of each other, we can use 'imcrop' to truncate the rotated image to the
+appropriate size.
+
+Let I be an M-by-N image. The following will truncate the transformed image
+and then truncate the image after inversely transforming it into the
+original:
+
+        I = im2double( imread( 'cameraman.tif' ) );
+        phi = 45;
+        
+        x = floor( (M+1) / 2 );
+        y = floor( (N+1) / 2 );
+        rect  = [(x+1) (y+1) (M-1) (N-1)];
+        recti = [x     y     (M-1) (N-1)];
+        
+        r = affinemtx2( 'rot', 45 );
+        rt  = maketform( 'affine', r );
+        rti = fliptform( rt );
+        
+        J = imtransform( I, rt );
+        J = imcrop( J, rect );
+        
+        I_recon = imtransform( J, rti );
+        I_recon = imcrop( I_recon, recti );
+
+        immse( I, I_recon )
+        
+        >> ans = 
+                4.1353e-04
+
+

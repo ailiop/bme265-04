@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+
+\bibitem{averbuch_ct_2012}
+Amir Averbuch, Ilya Sedelnikov, and Yoel Shkolnisky.
+\newblock {CT} reconstruction from parallel and fan-beam projections by a {2-D}
+  discrete {Radon} transform.
+\newblock {\em {IEEE} Transactions on Image Processing}, 21(2):733--741,
+  February 2012.
+
+\bibitem{hjouj_identification_2008}
+Fawaz Hjouj and David~W. Kammler.
+\newblock Identification of reflected, scaled, translated, and rotated objects
+  from their {Radon} projections.
+\newblock {\em {IEEE} Transactions on Image Processing}, 17(3):301--310, March
+  2008.
+
+\end{thebibliography}
