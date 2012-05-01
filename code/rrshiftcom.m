@@ -25,10 +25,23 @@ function t = rrshiftcom (R, xp, angles, outmode)
 %
 %   T = RRSHIFTCOM(...,ANGLES) estimates the translation vector using the
 %   Radon projections for each angle in the specified vector ANGLES. By
-%   default, the output vector results from averaging all such estimates.
+%   default, the output vector results from combining estimates obtained by
+%   all available angles.
+%
+%   In order for the estimate to be computed correctly, the elements in the
+%   second half of the ANGLES vector must be indices of columns of R that
+%   correspond to projection angles that are counter-clockwise orthogonal
+%   to the angles that correspond to the indices in the first half of
+%   ANGLES.
 %
 %   T = RRSHIFTCOM(...,OUTMODE) combines the translation vectors that
 %   estimated for different projection angles using the specified method.
+%   OUTMODE can take the following values:
+%       - 'mean' | 'average'
+%           returns the mean value of all computed estimates.
+%       - 'median'
+%           returns the median value of all computed estimates.
+%   If no OUTMODE is specified, it is set to 'mean'.
 %
 %   This function is useful as part of estimating the angle between two
 %   rotated images, as it allows them to have a common point of
@@ -55,21 +68,25 @@ function t = rrshiftcom (R, xp, angles, outmode)
 %   Alexandros-Stavros Iliopoulos <ailiop@cs.duke.edu>
 %
 %
-% See also rrangle.m, radonreg.m.
+% See also  rrangle.m, radonreg.m.
 %
 
 
 %% DEFAULTS
 
+% work with all projection displacements
 if ~exist( 'xp', 'var' ) || isempty( xp )
     maxoffset = (size(R,1) - 1) / 2;
     xp = (-maxoffset : 1 : maxoffset).';
 end
 
+% the set of "lower" angles is the first half of columns in R
 if ~exist( 'angles', 'var' ) || isempty( angles )
-    angles  = 1 : floor( size(R,2) / 2 );
+%     angles  = 1 : floor( size(R,2) / 2 );
+    angles = 1 : size(R,2);
 end
 
+% average all estimates
 if ~exist( 'outmode', 'var' ) || isempty( outmode )
 	outmode = 'mean';
 end
@@ -77,32 +94,55 @@ end
 
 %% INITIALISATION
 
-% calculate the column index offset that corresponds to a 90-degree
-% difference between two Radon projection lines
-plus90deg = floor( (size(R,2) + 1) / 2 );
+% get the indices of the columns that correspond to angles that are lower
+% (or greater, respectively) than 90 degrees
+angleidx_lt90 = 1 : floor( length(angles) / 2 );
+angleidx_gt90 = (ceil( length(angles) / 2 ) + 1) : length(angles);
 
-% get the shifted angle indices
-angles_plus90 = angles + plus90deg;
-% wrapIdx = find( angles_plus90 > 180 );
-% angles_plus90(wrapIdx) = mod( angles_plus90(wrapIdx), 180 );
+% get the corresponding angle sets
+angles_lt90 = angles(angleidx_lt90);
+angles_gt90 = angles(angleidx_gt90);
 
-% expand the radial coordinate vectors to matrices
-xp_mat = repmat( xp, 1, length(angles) );
+% % calculate the column index offset that corresponds to a 90-degree
+% % difference between two Radon projection lines
+% plus90deg = ceil( size(R,2) / 2 );
+% 
+% % get the shifted angle indices
+% angles_gt90 = angles_lt90 + plus90deg;
+
+% form two sets of angles whose corresponding elements point to
+% perpendicular projections
+angles_1 = [angles_lt90, angles_gt90];  % phi
+angles_2 = [angles_gt90, angles_lt90];  % phi + (pi/2)
+
+% form the corresponding column index sets
+angleidx_1 = [angleidx_lt90, angleidx_gt90];
+angleidx_2 = [angleidx_gt90, angleidx_lt90];
+
+% the second half of angles in angles_2 correspond to flipped columns of
+% the DRT (as the angles are now in the range (90,270]).
+% form two copies of the radial coordinate vector, expanded to matrices,
+% that would facilitate the operations under this consideration
+xp_mat_1 = repmat( xp, 1, length(angles_1) );
+xp_mat_2 = horzcat(  repmat( xp, 1, length(angles_gt90) ), ...
+                    -repmat( xp, 1, length(angles_lt90) ) );
 
 
 %% SHIFT ESTIMATIONS
 
 % compute the fractions of Radon transform integrals (see [1])
-rsums_angles = sum( R(:,angles), 1 );
-wrsums_angles   = sum( xp_mat .* R(:,angles), 1 );
-wrsums_angles90 = sum( xp_mat .* R(:,angles_plus90), 1 );
-rfracs    = wrsums_angles ./ rsums_angles;
-rfracs_90 = wrsums_angles90 ./ rsums_angles;
+psums_angles_1  = sum( R(:,angleidx_1), 1 );
+psums_angles_2  = sum( R(:,angleidx_2), 1 );
+wpsums_angles_1 = sum( xp_mat_1 .* R(:,angleidx_1), 1 );
+wpsums_angles_2 = sum( xp_mat_2 .* R(:,angleidx_2), 1 );
+fracs_11        = wpsums_angles_1 ./ psums_angles_1;
+fracs_21        = wpsums_angles_2 ./ psums_angles_1;
+fracs_22        = wpsums_angles_2 ./ psums_angles_2;
 
 % compute the translation vector elements that register the image's center
 % of mass with the origin
-tx = cosd(angles) .* rfracs - sind(angles) .* rfracs_90;
-ty = sind(angles) .* rfracs + cosd(angles) .* rfracs_90;
+tx = cosd(angles_1) .* fracs_11 - sind(angles_1) .* fracs_21;
+ty = sind(angles_1) .* fracs_11 + cosd(angles_1) .* fracs_22;
 
 
 %% COMBINATION OF ESTIMATES
@@ -111,10 +151,12 @@ ty = sind(angles) .* rfracs + cosd(angles) .* rfracs_90;
 switch outmode
     case {'mean', 'average'}
         t = [mean(tx); mean(ty)];
+    case {'median'}
+        t = [median(tx); median(ty)];
 end
 
 % map the estimated translation vector to the MATLAB-image space (1st
-% dimension is y-axis and 2nd dimension is (-x)-axis)
+% dimension is x-axis and 2nd dimension is (-y)-axis)
 t(1) = -t(1);
 % t = flipud( t );
 

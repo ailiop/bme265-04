@@ -12,12 +12,12 @@ function T = affinemtx2 (trans, param)
 %   transformation of type TRANS whose values are determined by PARAM. The
 %   input TRANS can have the following values:
 %   - 'rotation' | 'rot'
-%       defines a rotation matrix for a rotation angle of PARAM degrees
+%       defines a rotation matrix for a rotation angle of PARAM degrees.
 %   - 'translation' | 'trans' | 'tx'
 %       defines a translation matrix; PARAM can either be scalar (equal
 %       translation for both axes) or a 2-element vector (the 1st element
 %       corresponds to the y-axis translation and the 2nd one to the
-%       x-axis)
+%       x-axis).
 %   - 'scale' | 'sc'
 %       defines a scaling matrix; PARAM can either be scalar (equal scaling
 %       for both axes) or a 2-element vector (the 1st element corresponds

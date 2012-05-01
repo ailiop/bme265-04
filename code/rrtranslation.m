@@ -45,8 +45,8 @@ function t = rrtranslation (scale, rot, tcomI, tcomJ)
 t = [(tcomJ(1) * cosd(rot) - tcomJ(2) * sind(rot) - tcomI(1)) / scale;
      (tcomJ(2) * cosd(rot) + tcomJ(1) * sind(rot) - tcomI(2)) / scale];
 
-% negate the computed translation vector
-t = -t + 1;
+% % negate the computed translation vector
+% t = -t;
 
 
 end

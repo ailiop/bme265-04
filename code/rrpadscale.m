@@ -21,7 +21,7 @@ function [R1ss, R2ss] = rrpadscale (R1, R2)
 %   appropriate matrix and ceil(D/2) rows are inserted in the bottom
 %   (higher-index).
 %
-%   This arbitrary padding scheme was empeirically foudn to be the one that
+%   This arbitrary padding scheme was empeirically found to be the one that
 %   minimises the MSE between two DRTs, when one is a estimated scaled-back
 %   version of the other. (That is, if only paddings of an integral number
 %   of zero-rows are considered.)
@@ -31,7 +31,7 @@ function [R1ss, R2ss] = rrpadscale (R1, R2)
 %   Alexandros-Stavros Iliopoulos <ailiop@cs.duke.edu>
 %
 %
-% See also rrscale.m.
+% See also  rrscale.m, radonreg.m.
 %
 
 

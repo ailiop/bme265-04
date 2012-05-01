@@ -15,13 +15,18 @@ function s = rrscale (RI, RJ, angles, outmode)
 %   through an affine transformation.
 %
 %   S = RRSCALE(...,ANGLES) estimates the scaling parameter for each of the
-%   specified projection line slopes and then combines the estimates into a
+%   specified projection line slopes (provided as a vector of indices that
+%   specify columns of RI and RJ) and then combines the estimates into a
 %   single one. By default, the scaling parameter is estimated for all
 %   corresponding (in the images' current alignment) slopes.
 %
 %   S RRSCALE(...,OUTMODE) uses the specified method to combine the
-%   estimated scaling parameters. By default, this is 'mean', which simply
-%   averages the estimates.
+%   estimated scaling parameters. OUTMODE can take the following values:
+%       - 'mean' | 'average'
+%           returns the mean value of all computed estimates.
+%       - 'median'
+%           returns the median value of all computed estimates.
+%   If no OUTMODE is specified, it is set to 'mean'.
 %
 % ALGORITHM
 %
@@ -30,14 +35,12 @@ function s = rrscale (RI, RJ, angles, outmode)
 % EXAMPLE
 %
 %   s_true = 2;
-%   t = affinemtx2('scale',s_true);
-%   T = maketform('affine',t);
 %   I = imread('cameraman.tif');
-%   J = imtransform(I,T);
+%   J = imaffinetransform(I,s_true,[],[])
 %   RI = radon(I);
 %   RJ = radon(J);
 %   s_estim = rrscale(RI,RJ);
-%   s_true - s_estim
+%   error = s_true - s_estim
 %
 % REFERENCES
 %
@@ -50,16 +53,20 @@ function s = rrscale (RI, RJ, angles, outmode)
 %   Alexandros-Stavros Iliopoulos <ailiop@cs.duke.edu>
 %
 %
-% See also affinemtx2.m, rrangle.m.
+% See also  imaffinetransform.m, rrangle.m, rrtranslation.m, radonreg.m,
+%           rrpadscale.m.
 %
 
 
 %% DEFAULTS
 
-% if no options are specified, estimate scale using all projection angles
-% and average
-if nargin == 2
-    angles  = 1 : size(RI,2);
+% estimate the scale using all available projection angles
+if ~exist( 'angles', 'var' ) || isempty( angles )
+    angles = 1 : size(RI,2);
+end
+
+% return the average of all estimates
+if ~exist( 'outmode', 'var' ) || isempty( outmode )
     outmode = 'mean';
 end
 
@@ -67,12 +74,15 @@ end
 %% SCALE ESTIMATION
 
 % estimate the scaling parameter using each specified projection angle
-estimates = sqrt( sum( RJ(:,angles), 1 ) ./ sum( RI(:,angles), 1 ) );
+estimates = sqrt( sum( RI(:,angles), 1 ) ./ sum( RJ(:,angles), 1 ) );
+estimates = 1 ./ estimates;
 
 % combine the possibly multiple estimates into one
 switch outmode
     case {'mean', 'average'}
-        s = mean(estimates);
+        s = mean( estimates );
+    case {'median'}
+        s = median( estimates );
 end
 
 
